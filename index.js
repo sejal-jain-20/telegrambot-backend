@@ -4,6 +4,7 @@ const user = require("./model/user.js");
 const schedule = require("node-schedule");
 const connectDatabase = require("./config/database.js");
 const seedToken = require("./Controller/tokenController.js");
+require("dotenv").config({ path: "./config/config.env" });
 const token = process.env.TOKEN;
 const bot = new TelegramBot(token, { polling: true });
 const app = require("./app");
@@ -55,17 +56,18 @@ bot.on("message", async (msg) => {
   const userId = msg.chat.id;
   const userCity = msg.text;
   const name = msg.chat.first_name + " " + msg.chat.last_name;
-
+  if(userCity=="/subscribe" || userCity=="/unsubscribe")
+  return;
   try {
     const checkUser = await user.findOne({ userId });
     // console.log(checkUser);
     // Check if the user is subscribed
-    // const isSubscribed = checkUser?.subscribed ? true : false;
+    const isSubscribed = checkUser?.subscribed ? true : false;
     // console.log("checkUser.subscribed",checkUser.subscribed)
 
     // console.log("checker-1");
 
-    // const checker = isSubscribed?'':"You are not subscribed to daily weather updates. To subscribe, use the /subscribe command."
+    const checker = isSubscribed?'To unsubscribe our daily weather report, use "/unsubscribe" command ':"You are not subscribed to daily weather updates. To subscribe, use the /subscribe command."
     // console.log("checker-2");
     console.log(userCity);
     const response = await axios.get(
@@ -81,7 +83,7 @@ bot.on("message", async (msg) => {
     const windSpeed = data.wind.speed;
     const message = `The weather in ${city} is ${weather} with a temperature of ${temperature.toFixed(
       2
-    )}°C. The humidity is ${humidity}%, the pressure is ${pressure}hPa, and the wind speed is ${windSpeed}m/s`;
+    )}°C. The humidity is ${humidity}%, the pressure is ${pressure}hPa, and the wind speed is ${windSpeed}m/s ${checker}`;
 
     // Update or create user data
     if (!checkUser) {
@@ -114,7 +116,7 @@ bot.onText(/\/subscribe/, async (msg) => {
 
   if (!isSubscribed) {
     subscribeUser(userId);
-    sendMessage(userId, "You are now subscribed to daily weather updates!");
+     return sendMessage(userId, "You are now subscribed to daily weather updates!");
   } else {
     sendMessage(userId, "You are already subscribed.");
   }
@@ -126,7 +128,7 @@ bot.onText(/\/unsubscribe/, async (msg) => {
 
   if (isSubscribed) {
     unsubscribeUser(userId);
-    sendMessage(userId, "You have unsubscribed from daily weather updates.");
+    return  sendMessage(userId, "You have unsubscribed from daily weather updates.");
   } else {
     sendMessage(userId, "You are not currently subscribed.");
   }
