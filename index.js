@@ -58,7 +58,7 @@ bot.on("message", async (msg) => {
 
   try {
     const checkUser = await user.findOne({ userId });
-    console.log(checkUser);
+    // console.log(checkUser);
     // Check if the user is subscribed
     // const isSubscribed = checkUser?.subscribed ? true : false;
     // console.log("checkUser.subscribed",checkUser.subscribed)
@@ -66,7 +66,7 @@ bot.on("message", async (msg) => {
     // console.log("checker-1");
 
     // const checker = isSubscribed?'':"You are not subscribed to daily weather updates. To subscribe, use the /subscribe command."
-    console.log("checker-2");
+    // console.log("checker-2");
     console.log(userCity);
     const response = await axios.get(
       `https://api.openweathermap.org/data/2.5/weather?q=${userCity}&appid=${process.env.URL}`
